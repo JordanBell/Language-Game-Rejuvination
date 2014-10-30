@@ -58,9 +58,18 @@
 			gameFrameName = "Game_" + gameTypeName;
 			settingsFrameName = "Settings_" + gameTypeName;
 		}
+		
+		// Convenience method for initialising a new game
+		public function initNewGame():void
+		{
+			//Resets previous game stats.
+			resetGameStats();
+			nextRound();
+			startTimer();
+		}
 
-		//The settingsTo method means that all of the settings can be set from a single method, with multiple parameters
-		public function settingsTo(lang:Language,cate:String,gameDiff:String,subcat:String,format:String):void
+		//The settingsTo method means that all of the settings can be set from a single method
+		public function settingsTo(lang:Language, cate:String, gameDiff:String, subcat:String, format:String):void
 		{
 			//Set all of the variables based on the parameters
 			setGameDifficulty(gameDiff);
