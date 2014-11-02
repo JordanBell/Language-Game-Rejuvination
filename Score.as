@@ -1,66 +1,111 @@
 ﻿package 
 {
-	import flash.utils.Timer;
-
-	/*This class handles the scoring, including bonus values, 
-	multipliers, penalties and calculations.*/
+	/* This class handles the scoring, including bonus values, 
+	multipliers, penalties and calculations. */
+	
 	public class Score
 	{
-		//Common score-based properties
-		public var numCorrect:uint = 0;
-		public var numIncorrect:uint = 0;
-		public var playTime:uint = 0;
+		public static const baseCompletionScore:uint = 100;
+		
+		private var numCorrect:uint = 0;
+		private var numIncorrect:uint = 0;
+		private var m_playTime:uint = 0;
 
-		public var duration:uint;
-		public var penaltyOnWrong:Boolean;
-		public var difficultyMultiplier:uint;
-
-		//Score value components
-		public const baseCompletionScore:uint = 100;
-		public var timeBonus:Number = 0;
-		public var performanceBonus:Number = 0;
-		public var totalScore:int = 0;
-
-
-		//Constructor
-		public function Score()
+		private var m_duration:uint;
+		private var m_penalty:Boolean;
+		private var m_diffMult:uint;
+		
+		public function get performanceBonus():uint
 		{
-			//No constructor
+			return numCorrect * 100 -
+				   (m_penalty ? 
+				   (numIncorrect * 50) 
+				   : 0);
 		}
-
-		//calcScore calculates the score, based on the variables passed on to this class during gameplay
-		public function calcScore():Number
+		
+		public function get timeBonus():uint
 		{
-			//Sets the performance bonus, which is higher based on the number of correct answers
-			performanceBonus = numCorrect * 100;
-
-			//If penalties have been enabled, the performance bonus is decreased based on the number of incorrect answers
-			if (penaltyOnWrong)
+			var r_bonus:uint;
+			
+			if (m_playTime < m_duration)
 			{
-				performanceBonus -=  numIncorrect * 50;
-			}
-
-			/*Sets the time bonus, which is higher depending on how long
-			it took the player to complete the round. This is only done if
-			the playTime is greater than the duration, as only then will 
-			it be positive, and therefore act as a bonus*/
-			if (playTime < duration)
-			{
-				timeBonus = (duration - playTime) * 50;
-				timeBonus *=  (numCorrect / 10);
-				//The value is rounded up, so that no long decimals are shown after calculation
-				timeBonus = Math.ceil(timeBonus);
+				r_bonus = (m_duration - m_playTime) * 50;
+				r_bonus *=  (numCorrect / 10);
 			}
 			else
-			{
-				timeBonus = 0;
-			}
-
-			//The totalScore holds the value of all of these values put together, and multiplied by the difficulty multiplier
-			totalScore = (baseCompletionScore + performanceBonus + timeBonus) * difficultyMultiplier;
-			//The value is rounded up, so that no long decimals are shown after calculation
-			totalScore = Math.ceil(totalScore);
-			return (totalScore);
+				r_bonus = 0;
+				
+			return r_bonus;
+		}
+		
+		public function get totalScore():uint
+		{
+			return (baseCompletionScore + performanceBonus + timeBonus) * m_diffMult;
+		}
+		
+		public function get timePassed():String
+		{
+			return (m_duration - m_playTime).toString();
+		}
+		
+		public function get isGood():Boolean
+		{
+			return numCorrect > numIncorrect;
+		}
+		
+		public function get timeLimitReached():Boolean
+		{
+			return m_playTime == m_duration;
+		}
+		
+		public function set playTime(val:uint):void
+		{
+			m_playTime = val;
+		}
+		
+		public function get playTime():uint
+		{
+			return m_playTime;
+		}
+		
+		public function incCorrect():void
+		{
+			numCorrect++;
+		}
+		
+		public function incIncorrect():void
+		{
+			numIncorrect++;
+		}
+		
+		public function get correct():uint
+		{
+			return numCorrect;
+		}
+		
+		public function get incorrect():uint
+		{
+			return numIncorrect;
+		}
+		
+		public function set difficultyMultiplier(val:uint):void
+		{
+			m_diffMult = val;
+		}
+		
+		public function get difficultyMultiplier():uint
+		{
+			return m_diffMult;
+		}
+		
+		public function set duration(val:uint):void
+		{
+			m_duration = val;
+		}
+		
+		public function set penaltyOnWrong(b:Boolean):void
+		{
+			m_penalty = b;
 		}
 		
 		//ResetScore resets all of the scores to allow for a new game to be started

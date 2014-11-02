@@ -6,7 +6,6 @@
 	It also uses information from the Language and Category classes to perform translations.*/
 	public class Game extends Object
 	{
-
 		//Each game will have a name
 		public var name:String;
 		//User Interface frame name, used by the main timeline to jump to the correct game frame
@@ -35,7 +34,7 @@
 		/*The round number starts at -1, because it is initially increased before
 		being used in an array, allowing for it to access the first index (0) or the array*/
 		public var round:int = -1;
-		/*the totalRounds variable limits how many rounds take place in the game. 
+		/*The totalRounds variable limits how many rounds take place in the game. 
 		This changes based on the length of words held in the currentWordList*/
 		public var totalRounds:uint;
 
@@ -54,7 +53,8 @@
 		{
 			//Sets the properties which are based on the type of game.
 			name = gameTypeName;
-			//The frame names follow an expected format, with the only difference being the name of the game
+			
+			//The frame names follow an established format
 			gameFrameName = "Game_" + gameTypeName;
 			settingsFrameName = "Settings_" + gameTypeName;
 		}
@@ -62,49 +62,48 @@
 		// Convenience method for initialising a new game
 		public function initNewGame():void
 		{
-			//Resets previous game stats.
 			resetGameStats();
 			nextRound();
 			startTimer();
 		}
 
-		//The settingsTo method means that all of the settings can be set from a single method
+		//Allows all settings to be specified at once
 		public function settingsTo(lang:Language, cate:String, gameDiff:String, subcat:String, format:String):void
 		{
-			//Set all of the variables based on the parameters
+			//Set corresponding properties
 			setGameDifficulty(gameDiff);
 			setSubcategory(subcat);
 			setCategory(cate);
 			setFormat(format);
 
-			//The word list is then set, based on all of the related parameters
+			//The word list is then set, based this information
 			setWordlist(lang.getCategoryByName(cate).getRandomWords(subcat));
 		}
 
-		//Sets category
-		public function setCategory(aCategory:String)
+		public function setCategory(categoryStr:String)
 		{
-			chosenCategory = aCategory;
+			chosenCategory = categoryStr;
 		}
 
-		//Sets format
-		public function setFormat(aFormat:String):void
+		public function setFormat(formatStr:String):void
 		{
-			chosenFormat = aFormat;
+			chosenFormat = formatStr;
 		}
 
 		//Sets the game difficulty, along with all of the properties it affects
 		public function setGameDifficulty(diff:String):void
 		{
-			//The chosenGameDifficulty parameter is set to lower case to allow for any format discrepancies
 			chosenGameDifficulty = diff.toLowerCase();
 
 			//Hence sets the difficulty-based properties
 			switch (chosenGameDifficulty)
 			{
 				case "easy" :
-					//Only on easy difficulty will the timer be removed
+					//Remove the timer on easy
 					useTimer = false;
+					//score.setPenalty(false);
+					//score.setDifficultyMultiplier(1);
+					
 					score.penaltyOnWrong = false;
 					score.difficultyMultiplier = 1;
 					break;
@@ -175,15 +174,9 @@
 			
 			//Respond, depending on whether than answer was correct.
 			if (inputText == correctAnswer)
-			{
-				//If it's correct, increase the count of correct answers
-				score.numCorrect++;
-			}
+				score.incCorrect();
 			else
-			{
-				//Otherwise, increase the count of incorrect answers
-				score.numIncorrect++;
-			}
+				score.incIncorrect();
 			
 			//The method then returns a boolean value equal to whether or not the answer was correct
 			return (inputText == correctAnswer);
@@ -393,7 +386,7 @@
 		public function setTime()
 		{
 			//Play time increments
-			score.playTime++;
+			score.playTime = score.playTime + 1;
 		}
 		
 		public function pauseGameTimer()

@@ -12,8 +12,6 @@
 		//All of the games are instantiated, as well as a 'current game' variable to hold a copy of the game chosen by the user
 		public var flashCards:Game = new Game("FlashCards");
 		public var choices:Game = new Game("Choices");
-		public var countries:Game = new Game("Countries");
-		public var sentenceFiller:Game = new Game("SentenceFiller");
 		public var currentGame:Game = flashCards;
 
 		//Instantiates all 10 languages
