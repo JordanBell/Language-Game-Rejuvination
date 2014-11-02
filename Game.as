@@ -68,30 +68,30 @@
 		}
 
 		//Allows all settings to be specified at once
-		public function settingsTo(lang:Language, cate:String, gameDiff:String, subcat:String, format:String):void
+		public function settingsTo(lang:Language, _category:String, _gameDifficulty:String, _subcategory:String, _format:String):void
 		{
 			//Set corresponding properties
-			setGameDifficulty(gameDiff);
-			setSubcategory(subcat);
-			setCategory(cate);
-			setFormat(format);
+			gameDifficulty = _gameDifficulty;
+			subcategory = _subcategory;
+			category = _category;
+			format = _format;
 
 			//The word list is then set, based this information
-			setWordlist(lang.getCategoryByName(cate).getRandomWords(subcat));
+			wordList = lang.getCategoryByName(_category).getRandomWords(_subcategory);
 		}
 
-		public function setCategory(categoryStr:String)
+		public function set category(categoryStr:String)
 		{
 			chosenCategory = categoryStr;
 		}
 
-		public function setFormat(formatStr:String):void
+		public function set format(formatStr:String):void
 		{
 			chosenFormat = formatStr;
 		}
 
 		//Sets the game difficulty, along with all of the properties it affects
-		public function setGameDifficulty(diff:String):void
+		public function set gameDifficulty(diff:String):void
 		{
 			chosenGameDifficulty = diff.toLowerCase();
 
@@ -100,10 +100,7 @@
 			{
 				case "easy" :
 					//Remove the timer on easy
-					useTimer = false;
-					//score.setPenalty(false);
-					//score.setDifficultyMultiplier(1);
-					
+					useTimer = false;					
 					score.penaltyOnWrong = false;
 					score.difficultyMultiplier = 1;
 					break;
@@ -124,17 +121,17 @@
 		}
 
 		//Sets the subcategory
-		public function setSubcategory(subcat:String):void
+		public function set subcategory(subcat:String):void
 		{
 			//The chosenSubcategory parameter is set to lower case to allow for any format discrepancies
 			chosenSubcategory = subcat.toLowerCase();
 		}
 
 		//Sets the words lists, and all the properties affected by it
-		public function setWordlist(wordlist:Array):void
+		public function set wordList(_wordList:Array):void
 		{
 			//Sets the word list based on the parameter
-			currentWordlist = wordlist;
+			currentWordlist = _wordList;
 
 			//Finally, sets the total Rounds and game duration, based on the number of words in the list
 			totalRounds = currentWordlist.length;
@@ -163,8 +160,8 @@
 			score.resetScore();
 		}
 
-		/*SubmitAnswer deals with all of the processes in response to a submitted answer,
-		returning true or false depending on whether or not it was the correct answer.*/
+		/*Deals with all of the processes in response to a submitted 
+		answer, returning a boolean indicating if it was correct.*/
 		public function submitAnswer(inputText:String):Boolean
 		{
 			//The inputText parameter is set to lower case to allow for any format discrepancies
@@ -172,71 +169,50 @@
 			
 			var correctAnswer:String = getExpectedAnswer();
 			
-			//Respond, depending on whether than answer was correct.
+			//Calculate the answer's correctness
 			if (inputText == correctAnswer)
 				score.incCorrect();
 			else
 				score.incIncorrect();
 			
-			//The method then returns a boolean value equal to whether or not the answer was correct
 			return (inputText == correctAnswer);
 		}
 		
 		//getExpectedAnswer returns the expected answer based on a translation of the currentWord
 		public function getExpectedAnswer():String
-		{
-			//An expectedAnswer variable is used to compare the given answer to the correct one
-			var expectedAnswer:String;
+		{			
 			//The expected answer is the translation of the current word
-			expectedAnswer = translateWord(currentWord);
-			return(expectedAnswer);
+			return translateWord(currentWord);
 		}
 		
-		/*randomWordsFromList returns an array filled with a number of random 
-		words from the currentWordlist. The number of words being returned, 
-		and any words that are unwanted, can be specified as parameters*/
+		/* Get an array of random words. */
 		public function randomWordsFromList(numberOfWords:uint = 1, unwantedWord:String = ""):Array
 		{
 			var returnArray:Array = new Array();
-			var wordInvalid:Boolean;
+			var randomWordIndex:uint;
+			var randomWord:String;
 			
-			//Repeat a body of code which adds a word, as many times as specified in the argument.
+			var isUnwanted:Boolean;
+			var alreadyAdded:Boolean;
+			
+			// Add words
 			for (var i:uint = 0; i < numberOfWords; i++)
 			{
-				/*A while loop exists in order to prevent the random word being
+				isUnwanted = alreadyAdded = false; // Defaults
+					
+				/*A do while loop exists in order to prevent the random word being
 				picked as an unwanted word, or as a previously chosen word*/
 				do
 				{
-					//randomWordIndex holds the index of the returned Word
-					var randomWordIndex:uint;
 					//assign it a random index of the currentWordlist array
 					randomWordIndex = Math.random() * currentWordlist.length;
 					//Hence randomWord is a random english word from the current word list. 
-					var randomWord:String = translateWord(currentWordlist[randomWordIndex]);
+					randomWord = translateWord(currentWordlist[randomWordIndex]);
 					
-					//Determine whether or not the randomWord is a repeat or an unwanted word
-					//Initial value:
-					wordInvalid = false;
-					//First of all, check that it's not the unwantedWord
-					if (randomWord == unwantedWord)
-					{
-						wordInvalid = true;
-					}
-					else 
-					{
-						//Secondly, check that the randomWord is not a previous word
-						for (var j:uint = 0; j < returnArray.length; j++)
-						{
-							/*Check that the randomWord is not a previously added word 
-							as many times as there are words in the returnArray*/
-							if (randomWord == returnArray[j])
-							{
-								wordInvalid = true;
-							}
-						}
-					}
+					isUnwanted = (randomWord == unwantedWord)
+					alreadyAdded = (returnArray.indexOf(randomWord) != -1);
 					
-				} while (wordInvalid)
+				} while (isUnwanted || alreadyAdded)
 				
 				returnArray.push(randomWord);
 			}
@@ -255,21 +231,22 @@
 									  category:String = null, 
 									  subcategory:String = null):String
 		{
-			if (fromLang == null){ fromLang = LanguageGameHandler.outputLanguage; }
-			if (toLang == null){ toLang = LanguageGameHandler.inputLanguage; }
-			if (category == null){ category = chosenCategory; }
-			if (subcategory == null){ subcategory = chosenSubcategory; }
+			// Unspecified parameters are given default values.
+			if (fromLang == null) 
+				fromLang = LanguageGameHandler.outputLanguage;
+			if (toLang == null)
+				toLang = LanguageGameHandler.inputLanguage;
+			if (category == null)
+				category = chosenCategory;
+			if (subcategory == null)
+				subcategory = chosenSubcategory;
 			
-			//Resets the word parameter to its lowercase version, allowing a degree of freedom with the input
-			word = word.toLowerCase();
+			word = word.toLowerCase(); // Normalise input
 
-			/*The translatedWord variable will be returned, and has
-			a default message claiming that the word is not found
-			which will be overwritten if the word is found*/
-			var translatedWord:String = "Word not found. Sorry!";
+			var translatedWord:String = "Word not found. Sorry!"; // Return value
 
-			/*The following is the more efficient search algorithm, which is 
-			used when the category and subcategory parameters both contain a value*/
+			/*The following is a more efficient search algorithm, used when 
+			the category and subcategory parameters both contain a value*/
 			if ((category != null) && (subcategory != null))
 			{
 				/*The fromList contains the list of words in the fromLang language 
@@ -285,8 +262,8 @@
 					if (fromList[h].toLowerCase() == word)
 					{
 						/*When the word has been found in the fromList, its corresponding index 
-						is saved in the toList, giving the translated word.*/
-						translatedWord = toList[h];
+						is used in the toList, giving the corresponding translated word in that language.*/
+						return toList[h];
 					}
 				}
 			}
@@ -296,7 +273,7 @@
 				been included as a parameter, then we will need to find it ourselves.*/
 				
 				/*The indexes of the two arrays in which the word is found will 
-				be saved. They have default values that will be overwritten if found*/
+				be saved. They have default values that will be overridden*/
 				var index1:int = -1;
 				var index2:int = -1;
 
@@ -307,24 +284,17 @@
 					for (var j:uint = 0; j < fromLang.allCategories[i].everyWord.length; j++)
 					{
 						//And goes through every word in those categories
-						if (fromLang.allCategories[i].everyWord[j] == word)
+						if (fromLang.allCategories[i].everyWord[j].toLowerCase() == word)
 						{
 							//When the word has been found, a word of the same location in the toLang is returned
-							translatedWord = toLang.allCategories[i].everyWord[j];
-							return(translatedWord);
+							return toLang.allCategories[i].everyWord[j];
 						}
 					}
 				}
 			}
 
-			//If no match has been found, the programmer receives a message saying so
-			if (translatedWord == "Word not found. Sorry!")
-			{
-				trace(("We couldn't find a translation for " + word));
-			}
-			
-			//The translation is returned by the method
-			return(translatedWord);
+			//If no match has been found, say so
+			throw new Error("Failed to find a translation for " + word);
 		}
 		
 		
@@ -332,11 +302,11 @@
 		
 		/*If a timer is not currently set up, one is started. Otherwise, a 
 		duplicate is trying to be made and an error is sent to the programmer*/
-		public function startTimer()
+		public function startTimer():void
 		{
 			if (timerOn == false)
 			{
-				gameTimer = setInterval(setTime,1000);
+				gameTimer = setInterval(incTime,1000);
 				timerOn = true;
 				score.playTime = 0;
 			}
@@ -348,13 +318,13 @@
 		}
 		
 		//Functions the same as startTimer, but doesn't reset the playTime variable, allow the timer to resume
-		public function restartTimer()
+		public function restartTimer():void
 		{
 			//If there is currently no timer
 			if (timerOn == false)
 			{
 				//Starts a timer without resetting the amount of time passed
-				gameTimer = setInterval(setTime,1000);
+				gameTimer = setInterval(incTime,1000);
 				timerOn = true;
 			}
 			else
@@ -366,7 +336,7 @@
 		}
 		
 		//Ends the timer
-		public function endTimer()
+		public function endTimer():void
 		{
 			//If a timer is on
 			if (timerOn == true)
@@ -383,13 +353,13 @@
 		}
 		
 		//Updates the time variables, as per the set interval
-		public function setTime()
+		public function incTime():void
 		{
 			//Play time increments
 			score.playTime = score.playTime + 1;
 		}
 		
-		public function pauseGameTimer()
+		public function pauseGameTimer():void
 		{
 			//If there is a timer, it is removed, with a boolean to signify that it mustbe resumed.
 			if (timerOn)
@@ -399,7 +369,7 @@
 			}
 		}
 		
-		public function resumeIfPaused()
+		public function resumeIfPaused():void
 		{
 			//If the timer was paused, resume it
 			if (timerPaused)
@@ -408,7 +378,7 @@
 			}
 		}
 		
-		public function restartGameTimer()
+		public function restartGameTimer():void
 		{
 			if (timerPaused)
 			{

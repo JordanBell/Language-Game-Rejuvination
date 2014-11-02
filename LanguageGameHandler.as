@@ -27,7 +27,9 @@
 		public var Portuguese:Language = new Language("Portuguese");
 		/*An allLanguages array holds every language, in case they ever need 
 		to be cycled through while traversing or searching through them*/
-		public var allLanguages:Array = new Array(English,Spanish,French,Italian,German,Japanese,Finnish,Turkish,Dutch,Portuguese);
+		public var allLanguages:Array = new Array(English, Spanish, French, 
+												   Italian, German, Japanese, 
+												   Finnish, Turkish, Dutch, Portuguese);
 		
 		/*The variables of inputLanguage and outputLanguage change depending
 		on what the user chooses. English is always either the input or output
@@ -1102,8 +1104,8 @@
 			}
 		}
 		
-		/*The englishWordReturn method will return an array holding every english word in the database
-		This is used when the list of words is displayed in the main program's translation screen*/
+		/*Return an array holding every english word in the database.
+		Used when the list of words is displayed in the main program's translation screen*/
 		public function englishWordReturn():Array
 		{
 			//Instantiates a new array which will hold all of the values being returned by the method
@@ -1124,14 +1126,14 @@
 			return(returnList);
 		}
 		
-		//The setLanguage method sets the input and output languages based on two parameters
+		//Sets the input and output languages
 		public function setLanguage(inLang:Language, outLang:Language):void
 		{
 			inputLanguage = inLang;
 			outputLanguage = outLang;
 		}
 		
-		//The getLangByName method will return a Language variable based on a String parameter
+		//Return a Language by name
 		public function getLangByName(aName:String):Language
 		{
 			//The inputText parameter is set to lower case to allow for any format discrepancies 
