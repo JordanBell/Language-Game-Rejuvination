@@ -37,36 +37,25 @@
 			}
 		}
 
-		//Receives an array, and sets it to the correct lists
-		override public function setWordsTo(allWords:Array):void
+		//getListByName returns a list of the category depending on a string parameter
+		override public function getListByNum(num:uint):Array
 		{
-			//Resets all of the arrays, in order for them to be written to
-			easyList.splice(0, easyList.length);
-			mediumList.splice(0, mediumList.length);
-			hardList.splice(0, hardList.length);
-			everyWord.splice(0, everyWord.length);
-
-			//The chosenList is the array which holds the value of the returned array
-			var chosenList:Array = easyList;
-
-			//The following For statement is necessary, as there is more than one word list in a large category.
-			for (var i:uint = 0; i < allWords.length; i++)
+			switch (num)
 			{
-				//If the word is the name of one of the lists:
-				var forEasyList:Boolean = (allWords[i].toLowerCase() == "easylist");
-				var forMediumList:Boolean = (allWords[i].toLowerCase() == "mediumlist");
-				var forHardList:Boolean = (allWords[i].toLowerCase() == "hardlist");
-				if (forEasyList || forMediumList || forHardList)
-				{
-					//Set the chosen list to the list specified in that cell
-					chosenList = getListByName(allWords[i]);
-				}
-				else
-				{
-					//Add the word to the last specified list
-					chosenList.push(allWords[i].toLowerCase());
-					everyWord.push(allWords[i].toLowerCase());
-				}
+				case 0 :
+					return (easyList);
+					break;
+				case 1 :
+					return (mediumList);
+					break;
+				case 2 :
+					return (hardList);
+					break;
+				case 3 :
+					return (everyWord);
+					break;
+				default :
+					throw new Error("Unrecognised list number " + num);
 			}
 		}
 	}

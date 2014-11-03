@@ -1,4 +1,6 @@
-﻿package 
+﻿
+
+package 
 {
 	/*The language class has eleven instantiated categories, one for every category
 	available in the program. This class is used mainly for category coordination,

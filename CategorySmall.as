@@ -10,16 +10,24 @@
 			super(categoryName);
 			size = 1;
 		}
-
-		//Receives an array, and sets it to the correct lists
-		override public function setWordsTo(allWords:Array):void
+		
+		//Returns a list of the category depending on its number*
+		override public function getListByNum(num:uint):Array
 		{
-			//Resets all of the arrays, in order for them to be written to
-			everyWord.splice(0, everyWord.length);
-			for (var i:uint; i < allWords.length; i++)
-			{
-				everyWord.push(allWords[i].toLowerCase());
-			}
+			return everyWord;
+		}
+
+		/*Returns a list of the category by its name
+		(This is to be overridden by all except CategorySmall)*/
+		override public function getListByName(aName:String):Array
+		{
+			return everyWord;
+		}
+		
+		override public function addWord(word:String, subcategoryNum:uint):void
+		{
+			// Only add it to everyWord
+			everyWord.push(word.toLowerCase())
 		}
 	}
 }

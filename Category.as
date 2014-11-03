@@ -17,17 +17,26 @@
 			name = categoryName;
 		}
 
-		//Receives an array, and sets it to the correct lists
-		public function setWordsTo(allWords:Array):void
+		//Returns a list of the category depending on its number*
+		public function getListByNum(num:uint):Array
 		{
-			//This is will be overridden, depending on the type of category
+			throw new Error("Failed to implement getListByNum in a category subclass.");
 		}
 
-		/*getListByName returns a list of the category depending on a string parameter 
+		/*Returns a list of the category by its name
 		(This is to be overridden by all except CategorySmall)*/
 		public function getListByName(aName:String):Array
 		{
-			return(everyWord);
+			throw new Error("Failed to implement getListByNum in a category subclass.");
+		}		
+
+		//Receives an array, and sets it to the correct lists
+		public function addWord(word:String, subcategoryNum:uint):void
+		{
+			var chosenList:Array = getListByNum(subcategoryNum);
+			
+			chosenList.push(word.toLowerCase());
+			everyWord.push(word.toLowerCase());
 		}
 
 		//getRandomWords receives a string value, and randomises then returns that value’s corresponding list of words.

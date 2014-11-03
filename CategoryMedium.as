@@ -34,33 +34,22 @@
 					return (firstList);
 			}
 		}
-
-		//Receives an array, and sets it to the correct lists
-		override public function setWordsTo(allWords:Array):void
+		
+		override public function getListByNum(num:uint):Array
 		{
-			//Resets all of the arrays, in order for them to be written to
-			firstList.splice(0, firstList.length);
-			secondList.splice(0, secondList.length);
-			everyWord.splice(0, everyWord.length);
-
-			//The chosenList is the array which holds the value of the returned array
-			var chosenList:Array = firstList;
-
-			//The following For statement is necessary, as there is more than one word list.
-			for (var i:uint = 0; i < allWords.length; i++)
+			switch (num)
 			{
-				//If the word is the name of one of the lists:
-				if (allWords[i].toLowerCase() == "firstlist" || allWords[i].toLowerCase() == "secondlist")
-				{
-					//Set the chosen list to the list specified in that cell
-					chosenList = getListByName(allWords[i]);
-				}
-				else
-				{
-					//Add the word to the last specified list
-					chosenList.push(allWords[i].toLowerCase());
-					everyWord.push(allWords[i].toLowerCase());
-				}
+				case 0 :
+					return (firstList);
+					break;
+				case 1 :
+					return (secondList);
+					break;
+				case 2 :
+					return (everyWord);
+					break;
+				default :
+					throw new Error("Unrecognised list number " + num);
 			}
 		}
 	}
